@@ -1,0 +1,2 @@
+-- 云端部署版会在 Node.js 启动时自动创建 PostgreSQL 表结构。
+-- 如需手工初始化，请参考 server/src/schema.js。
