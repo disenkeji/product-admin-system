@@ -1,0 +1,11 @@
+import express from 'express';
+import multer from 'multer';
+import path from 'path';
+import fs from 'fs';
+import {auth,adminOnly} from '../auth.js';
+const router=express.Router();
+const dir=process.env.UPLOAD_DIR||'uploads';fs.mkdirSync(dir,{recursive:true});
+const storage=multer.diskStorage({destination:(req,file,cb)=>cb(null,dir),filename:(req,file,cb)=>{const ext=path.extname(file.originalname).toLowerCase();cb(null,`${Date.now()}-${Math.random().toString(36).slice(2)}${ext}`)}});
+const upload=multer({storage,limits:{fileSize:5*1024*1024},fileFilter:(req,file,cb)=>cb(null,/^image\/(jpeg|png|webp|gif)$/.test(file.mimetype))});
+router.post('/',auth,adminOnly,upload.single('file'),(req,res)=>{if(!req.file)return res.status(400).json({message:'请选择图片'});res.json({url:`/uploads/${req.file.filename}`})});
+export default router;
